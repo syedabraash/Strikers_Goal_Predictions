@@ -2,6 +2,8 @@
 
 A forecasting model and interactive dashboard for Premier League forwards. It projects each forward's goals, assists and minutes for 2026-27 from five seasons of past data, and reports the uncertainty around every number.
 
+![Top 3 projected scorers](assets/top3_forecast.png)
+
 ## Highlights
 
 - **Forecasts with ranges, not single numbers.** Every projection comes with a 10th to 90th percentile band and the probability of reaching 10, 15 or 20 goals.
@@ -79,6 +81,14 @@ This regenerates the three CSVs in `data/`, and the dashboard picks them up on t
 4. **Simulation.** 4,000 simulated seasons per player combine the minutes uncertainty (bootstrapped from training residuals) with Gamma-uncertain rates and Poisson scoring. Penalty goals are modelled as penalty attempts times the league conversion rate. The simulations give expected values, percentile ranges and threshold probabilities.
 5. **Backtest.** Rolling origin: for each test season the model is tuned and fitted only on earlier seasons.
 
+## Limitations
+
+- **Minutes are the weakest link.** Injuries and transfers are not visible in this data, and the minutes model barely beats repeating last season.
+- **Survivor bias.** Players who left the league or lost the forward label have no next-season row, so the model cannot learn from them. Forecasts assume each player stays in the league as a forward.
+- **Small sample.** About 160 backtest cases, so small differences between models are not conclusive.
+- **Conservative at the top.** Shrinkage pulls consistent elite scorers toward the average, which is why the forecast for the highest scorers sits well below their last season.
+- **No shot data.** There is no xG, shots or xA, so there is no threat model and no separation of finishing skill from luck.
+- **Golden Boot tab is approximate.** It is rebuilt from each player's forecast mean and range, treating players as independent, not from the original simulations.
 
 ## Roadmap
 
