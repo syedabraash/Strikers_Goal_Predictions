@@ -2,8 +2,6 @@
 
 A forecasting model and interactive dashboard for Premier League forwards. It projects each forward's goals, assists and minutes for 2026-27 from five seasons of past data, and reports the uncertainty around every number.
 
-![Top 3 projected scorers](assets/top3_forecast.png)
-
 ## Highlights
 
 - **Forecasts with ranges, not single numbers.** Every projection comes with a 10th to 90th percentile band and the probability of reaching 10, 15 or 20 goals.
