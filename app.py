@@ -1,11 +1,3 @@
-"""
-Premier League forwards: 2026-27 forecast dashboard.
-
-Reads the CSVs produced by forward_forecast_pipeline.py (stored in ./data):
-  forecast_2026_27.csv, panel_clean.csv, backtest_metrics.csv
-
-Run:  streamlit run app.py
-"""
 from pathlib import Path
 
 import numpy as np
@@ -40,11 +32,6 @@ def load_data():
 
 @st.cache_data
 def simulate_golden_boot(means, sds, n_sims=20000, seed=7):
-    """Approximate title race from each player's forecast mean and p10-p90 spread.
-
-    Season goals are drawn from a negative binomial matched to those two numbers,
-    independently across players. Ties are broken at random.
-    """
     rng = np.random.default_rng(seed)
     m, s = np.array(means), np.array(sds)
     var = np.maximum(s ** 2, m * 1.05)  # NB needs variance > mean
