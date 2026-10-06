@@ -13,9 +13,6 @@ C_GOALS, C_ASSISTS, C_MIN = "#1f77b4", "#ff7f0e", "#2ca02c"
 st.set_page_config(page_title="PL Forwards Forecast", page_icon="⚽", layout="wide")
 
 
-# ----------------------------------------------------------------------------
-# Data
-# ----------------------------------------------------------------------------
 @st.cache_data
 def load_data():
     fc = pd.read_csv(DATA / "forecast_2026_27.csv")
@@ -34,7 +31,7 @@ def load_data():
 def simulate_golden_boot(means, sds, n_sims=20000, seed=7):
     rng = np.random.default_rng(seed)
     m, s = np.array(means), np.array(sds)
-    var = np.maximum(s ** 2, m * 1.05)  # NB needs variance > mean
+    var = np.maximum(s ** 2, m * 1.05)
     r = m ** 2 / (var - m)
     p = r / (r + m)
     draws = rng.negative_binomial(r[None, :], p[None, :], size=(n_sims, len(m)))
@@ -51,9 +48,6 @@ METRICS = {
     "Goals + assists": ("exp_ga", "ga_p10", "ga_p90", "#9467bd"),
 }
 
-# ----------------------------------------------------------------------------
-# Header
-# ----------------------------------------------------------------------------
 st.title("Premier League forwards: 2026-27 forecast")
 st.caption(
     f"{len(fc)} forwards who played in the Premier League in 2025-26. "
@@ -66,9 +60,6 @@ tab_lb, tab_pl, tab_cmp, tab_gap, tab_gb, tab_model = st.tabs(
      "Golden Boot race", "Model report"]
 )
 
-# ----------------------------------------------------------------------------
-# 1. Leaderboard
-# ----------------------------------------------------------------------------
 with tab_lb:
     c1, c2, c3, c4 = st.columns([2, 2, 2, 1.4])
     squads = c1.multiselect("Club", sorted(fc["Squad"].unique()))
@@ -122,9 +113,6 @@ with tab_lb:
             "P(15+ goals)": st.column_config.ProgressColumn(format="percent", min_value=0, max_value=1),
         })
 
-# ----------------------------------------------------------------------------
-# 2. Player profile
-# ----------------------------------------------------------------------------
 with tab_pl:
     ranked = fc.sort_values("exp_goals", ascending=False)
     name = st.selectbox("Player", ranked["Player"].tolist(),
@@ -190,9 +178,6 @@ with tab_pl:
                     "Non-pen goals", "Pen goals", "Pen attempts", "NPG/90", "Ast/90"]
     st.dataframe(hist.round(2), hide_index=True, width="stretch")
 
-# ----------------------------------------------------------------------------
-# 3. Compare
-# ----------------------------------------------------------------------------
 with tab_cmp:
     st.caption("Percentiles are relative to forwards projected for 900+ minutes.")
     default = fc.sort_values("exp_goals", ascending=False)["Player"].head(3).tolist()
@@ -225,9 +210,6 @@ with tab_cmp:
             "Pen attempts /90": cmp["rate_PA"].round(2)})
         st.dataframe(show, width="stretch")
 
-# ----------------------------------------------------------------------------
-# 4. Over / under performers
-# ----------------------------------------------------------------------------
 with tab_gap:
     st.caption("Compares last season's raw rate with the forecast rate. The forecast blends recent seasons with the "
                "league average, weighted by how much each player has played, so a big gap means last season looks "
@@ -265,9 +247,6 @@ with tab_gap:
         b.markdown("**Bounce-back candidates** (last season well below forecast)")
         b.dataframe(view(g.nsmallest(8, "gap")), hide_index=True, width="stretch")
 
-# ----------------------------------------------------------------------------
-# 5. Golden Boot race
-# ----------------------------------------------------------------------------
 with tab_gb:
     st.caption("Approximation: each player's season goals are drawn from a distribution matched to the forecast mean "
                "and 10-90% range, independently across players. Transfers and injuries beyond what the minutes model "
@@ -292,9 +271,6 @@ with tab_gb:
         "Win": st.column_config.ProgressColumn(format="percent", min_value=0, max_value=1),
         "Top 3": st.column_config.ProgressColumn(format="percent", min_value=0, max_value=1)})
 
-# ----------------------------------------------------------------------------
-# 6. Model report
-# ----------------------------------------------------------------------------
 with tab_model:
     num = lambda k, col="pooled": float(pd.to_numeric(bt.loc[k, col], errors="coerce"))
     st.markdown("Backtest: the model is trained on earlier seasons only and tested on 2024-25 and 2025-26 "
